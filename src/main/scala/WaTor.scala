@@ -23,6 +23,7 @@ abstract class Animal(var age: Int, val reproduceTime: Int) {
               ocean(curr._1)(curr._2) = null
             }
             if(fishes.nonEmpty){
+              shark.energy += 1
               val head: (Int, Int) = Random.shuffle(fishes).head
               ocean(head._1)(head._2) = shark
             } else {
@@ -76,12 +77,9 @@ class Fish(age: Int, reproduceTime: Int) extends Animal(age, reproduceTime) {
 
 class World(wh: (Int, Int), fish: (Int, Int), shark: (Int, Int, Int)) {
 
-  private def newShark = new Shark(0, shark._2, shark._3)
+  private val rand = scala.util.Random
+  private def newShark = new Shark(0, shark._2, rand.nextInt(shark._3-1)+1)
   private def newFish = new Fish(0, fish._2)
-
-  def fishReprTime = fish._2
-  def sharkReprTime = shark._2
-  def sharkEnergy = shark._3
 
   private val (height, width) = wh
   private val (fishes, sharks) = (fish._1, shark._1)
@@ -89,7 +87,6 @@ class World(wh: (Int, Int), fish: (Int, Int), shark: (Int, Int, Int)) {
   val ocean: Array[Array[Animal]] = create(fishes, sharks)
 
   private def create(fishCount: Int, sharkCount: Int): Array[Array[Animal]] = {
-    val rand = scala.util.Random
     def randomPositions(coordinates: Set[(Int, Int)]): Set[(Int, Int)] = {
       if (coordinates.size == (fishCount + sharkCount)) coordinates
       else randomPositions(coordinates + ((rand.nextInt(height), rand.nextInt(width))))

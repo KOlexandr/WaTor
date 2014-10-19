@@ -3,6 +3,8 @@ import scala.Tuple3;
 
 import java.applet.Applet;
 import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 class WaTorCanvas extends Canvas {
     private int step = 0;
@@ -20,6 +22,9 @@ class WaTorCanvas extends Canvas {
 
     private boolean running = false;
 
+    private java.util.List<Integer> sharks = new ArrayList<>();
+    private java.util.List<Integer> fishes = new ArrayList<>();
+
     public WaTorCanvas(int width, int height, int fishCount, int fishReprTime, int sharkCount, int sharkReprTime, int sharkEnergy) {
         this.width = width;
         this.height = height;
@@ -29,6 +34,8 @@ class WaTorCanvas extends Canvas {
         this.sharkReprTime = sharkReprTime;
         this.sharkEnergy = sharkEnergy;
         world = new World(new Tuple2<>(height, width), new Tuple2<>(fishCount, fishReprTime), new Tuple3<>(sharkCount, sharkReprTime, sharkEnergy));
+        sharks.add(world.countSharks());
+        fishes.add(world.countFishes());
     }
 
     public void reload(int width, int height, int fishCount, int fishReprTime, int sharkCount, int sharkReprTime, int sharkEnergy){
@@ -66,6 +73,8 @@ class WaTorCanvas extends Canvas {
             Thread.sleep(100);
         } catch (InterruptedException ignored){}
         world.forward(step++);
+        sharks.add(world.countSharks());
+        fishes.add(world.countFishes());
         repaint();
         paintOcean(g);
     }
@@ -110,6 +119,14 @@ class WaTorCanvas extends Canvas {
     public int getSharkEnergy() {
         return sharkEnergy;
     }
+
+    public List<Integer> getSharks() {
+        return sharks;
+    }
+
+    public List<Integer> getFishes() {
+        return fishes;
+    }
 }
 
 class ScrollField extends Panel {
@@ -149,10 +166,10 @@ public class WaTor extends Applet {
 
     public void init() {
         setLayout(new FlowLayout());
-        setSize(1000, 600);
+        setSize(800, 400);
 
         wc = new WaTorCanvas(40, 40, 50, 8, 5, 15, 20);
-        wc.setSize(600, 600);
+        wc.setSize(400, 400);
         add(wc);
 
         final Panel p = new Panel();
@@ -189,17 +206,17 @@ public class WaTor extends Applet {
         });
         p.add(applyNewSettings);
 
-        Panel p1 = new Panel();
-        p1.add(new Label("Initial Fish"));
+        final Panel fish = new Panel();
+        fish.add(new Label("Initial Fish"));
         initFishField = new TextField(Integer.toString(wc.getFishCount()), 5);
-        p1.add(initFishField);
-        p.add(p1);
+        fish.add(initFishField);
+        p.add(fish);
 
-        p1 = new Panel();
-        p1.add(new Label("Initial Sharks"));
+        final Panel shark = new Panel();
+        shark.add(new Label("Initial Sharks"));
         initSharkField = new TextField(Integer.toString(wc.getSharkCount()), 5);
-        p1.add(initSharkField);
-        p.add(p1);
+        shark.add(initSharkField);
+        p.add(shark);
 
         fishBreedScrollField = new ScrollField("Fish Breed Age", wc.getFishReprTime());
         p.add(fishBreedScrollField);
@@ -210,5 +227,9 @@ public class WaTor extends Applet {
         sharkStarveScrollField = new ScrollField("Shark Starve Time", wc.getSharkEnergy());
         p.add(sharkStarveScrollField);
         add(p);
+
+//        final Button test = new Button("Test");
+//        test.addActionListener(e -> wc.plotSharlFish());
+//        add(test);
     }
 }
