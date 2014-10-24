@@ -5,8 +5,13 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class WaTorCanvas extends Canvas {
 
@@ -18,6 +23,10 @@ class WaTorCanvas extends Canvas {
     public static final int DEFAULT_SHARK_ENERGY = 20;
     public static final int DEFAULT_FISH_REPR_TIME = 8;
     public static final int DEFAULT_SHARK_REPR_TIME = 15;
+
+    public static final Path pathToPhasePortraitCSV = Paths.get("D:\\phasePortrait.csv");
+    public static final Path pathToFishPopulationCSV = Paths.get("D:\\fishPopulation.csv");
+    public static final Path pathToSharkPopulationCSV = Paths.get("D:\\sharkPopulation.csv");
 
     private int step = 0;
     private World world;
@@ -173,12 +182,38 @@ class WaTorCanvas extends Canvas {
         return String.valueOf(this.timeout);
     }
 
-    public List<Integer> getSharks() {
-        return sharks;
+    public void saveData() {
+        processData(pathToPhasePortraitCSV, toCSVLine(createPhasePortrait()));
+        processData(pathToFishPopulationCSV, toCSVLine(createPopulation(fishes)));
+        processData(pathToSharkPopulationCSV, toCSVLine(createPopulation(sharks)));
     }
 
-    public List<Integer> getFishes() {
-        return fishes;
+    private void processData(final Path path, final Collection<String> data){
+        try {
+            Files.deleteIfExists(path);
+            Files.createFile(path);
+            Files.write(path, data);
+        } catch (IOException ignored) {}
+    }
+
+    private Collection<String> toCSVLine(final Collection<Tuple2<Integer, Integer>> lines){
+        return lines.stream().map(t -> t._1().toString() + "," + t._2().toString()).collect(Collectors.toList());
+    }
+
+    private List<Tuple2<Integer, Integer>> createPhasePortrait(){
+        final List<Tuple2<Integer, Integer>> list = new ArrayList<>();
+        for (int i = 0; i < sharks.size(); i++) {
+            list.add(new Tuple2<>(sharks.get(i), fishes.get(i)));
+        }
+        return list;
+    }
+
+    private List<Tuple2<Integer, Integer>> createPopulation(final List<Integer> counts){
+        final List<Tuple2<Integer, Integer>> list = new ArrayList<>();
+        for (int i = 0; i < sharks.size(); i++) {
+            list.add(new Tuple2<>(i, counts.get(i)));
+        }
+        return list;
     }
 }
 
@@ -220,7 +255,7 @@ public class WaTor extends Applet {
 
     public void init() {
         setLayout(new FlowLayout());
-        setSize(1000, 450);
+        setSize(650, 475);
 
         wc = new WaTorCanvas();
         wc.setSize(400, 400);
@@ -264,6 +299,10 @@ public class WaTor extends Applet {
             timeoutField.setText(wc.setTimeout(timeoutField.getText()));
         });
         p.add(applyNewSettings);
+
+        final Button save = new Button("Save Data");
+        save.addActionListener(e -> wc.saveData());
+        p.add(save);
 
         final Panel fish = new Panel();
         fish.add(new Label("Initial Fish"));

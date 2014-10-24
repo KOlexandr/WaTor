@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="jfreesvg-2.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/main/resources/jfreesvg-2.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/main/resources/junit-4.11.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/main/resources/orsoncharts-1.4-eval-nofx.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/main/resources/orsonpdf-1.6-eval.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/main/resources/servlet.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/main/resources/swtgraphics2d.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
