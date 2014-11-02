@@ -72,6 +72,9 @@ class WaTorCanvas extends Canvas {
         );
     }
 
+    /**
+     * re-initialize applet with new parameters
+     */
     public void reload(int width, int height, int fishCount, int fishReprTime, int sharkCount, int sharkReprTime, int sharkEnergy){
         fishes.clear();
         sharks.clear();
@@ -80,6 +83,9 @@ class WaTorCanvas extends Canvas {
         world = new World(new Tuple2<>(height, width), new Tuple2<>(fishCount, fishReprTime), new Tuple3<>(sharkCount, sharkReprTime, sharkEnergy));
     }
 
+    /**
+     * re-initialize applet with default parameters
+     */
     public void reload(){
         sharks.clear();
         fishes.clear();
@@ -128,6 +134,12 @@ class WaTorCanvas extends Canvas {
         paintOcean(g);
     }
 
+    /**
+     * show all ocean on each moment of time
+     * green square - fish
+     * red square - shark
+     * blue square - empty
+     */
     private void paintOcean(Graphics g) {
         // calculate number of pixels in one ocean square
         final Dimension d = getSize();
@@ -182,6 +194,9 @@ class WaTorCanvas extends Canvas {
         return String.valueOf(this.timeout);
     }
 
+    /**
+     * saves data from each moment of time into files
+     */
     public void saveData() {
         processData(pathToPhasePortraitCSV, toCSVLine(createPhasePortrait()));
         processData(pathToFishPopulationCSV, toCSVLine(createPopulation(fishes)));
@@ -253,6 +268,9 @@ public class WaTor extends Applet {
     private ScrollField sharkBreedScrollField;
     private ScrollField sharkStarveScrollField;
 
+    /**
+     * initialize applet
+     */
     public void init() {
         setLayout(new FlowLayout());
         setSize(650, 475);

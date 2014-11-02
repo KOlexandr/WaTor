@@ -7,6 +7,13 @@ abstract class Animal(var age: Int, val reproduceTime: Int) {
   def isFish: Boolean
   def isShark: Boolean
 
+  /**
+   * makes one step for one element of ocean
+   * @param curr - current position (column)
+   * @param ocean - all world
+   * @param empty - all empty columns position current position
+   * @param fishes - all position with fishes around current position
+   */
   def action(curr: (Int, Int), ocean: Array[Array[Animal]], empty: List[(Int, Int)], fishes: List[(Int, Int)]): Unit = {
     this match {
       case shark: Shark =>
@@ -86,6 +93,12 @@ class World(wh: (Int, Int), fish: (Int, Int), shark: (Int, Int, Int)) {
 
   val ocean: Array[Array[Animal]] = create(fishes, sharks)
 
+  /**
+   * initialize model
+   * @param fishCount - count of fishes
+   * @param sharkCount - count of sharks
+   * @return new ocean with animals
+   */
   private def create(fishCount: Int, sharkCount: Int): Array[Array[Animal]] = {
     def randomPositions(coordinates: Set[(Int, Int)]): Set[(Int, Int)] = {
       if (coordinates.size == (fishCount + sharkCount)) coordinates
@@ -105,19 +118,40 @@ class World(wh: (Int, Int), fish: (Int, Int), shark: (Int, Int, Int)) {
     modifyOcean(Array.ofDim(height, width), randomPositions(Set()), 0)
   }
 
+  /**
+   * counts all animals of some type
+   * @param ocean - all world where exist some animals
+   * @param f - function which returns true if this type of animal need to be counted
+   */
   private def countAll(ocean: Array[Array[Animal]])(f: Animal => Boolean): Int = {
     if(ocean.isEmpty) 0
     else ocean.head.count(f) + countAll(ocean.tail)(f)
   }
 
+  /**
+   * counts all exist fishes
+   */
   def countFishes: Int = countAll(ocean)(a => null != a && a.isFish)
 
+  /**
+   * counts all exist sharks
+   */
   def countSharks: Int = countAll(ocean)(a => null != a && a.isShark)
 
+  /**
+   * makes one step for all elements of the ocean
+   * @param step - global number of step
+   */
   def forward(step: Int): Unit = {
     0.until(height).foreach(i => 0.until(width).foreach(j => if(null != ocean(i)(j) && ocean(i)(j).lastStep < step) oneStep(i, j, step)))
   }
 
+  /**
+   * makes one step for one element of matrix
+   * @param i - row
+   * @param j - column
+   * @param step - global number of step
+   */
   def oneStep(i: Int, j: Int, step: Int): Unit = {
     val possible: List[(Int, Int)] = List(
       (i-1, j-1), (i-1, j), (i-1, j+1),
