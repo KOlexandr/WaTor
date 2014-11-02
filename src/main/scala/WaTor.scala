@@ -6,6 +6,7 @@ abstract class Animal(var age: Int, val reproduceTime: Int) {
   def duplicate: Animal
   def isFish: Boolean
   def isShark: Boolean
+  private val SHARK_ENERGY_FROM_ONE_FISH = 3
 
   /**
    * makes one step for one element of ocean
@@ -30,7 +31,7 @@ abstract class Animal(var age: Int, val reproduceTime: Int) {
               ocean(curr._1)(curr._2) = null
             }
             if(fishes.nonEmpty){
-              shark.energy += 1
+              shark.energy += (SHARK_ENERGY_FROM_ONE_FISH - 1)
               val head: (Int, Int) = Random.shuffle(fishes).head
               ocean(head._1)(head._2) = shark
             } else {
@@ -158,6 +159,9 @@ class World(wh: (Int, Int), fish: (Int, Int), shark: (Int, Int, Int)) {
       (i, j-1), (i, j+1), (i+1, j-1),
       (i+1, j), (i+1, j+1)
     ).filter(p => 0 <= p._1 && p._1 < height && 0 <= p._2 && p._2 < width)
+    /*val possible: List[(Int, Int)] = List(
+      (i-1, j), (i, j-1), (i, j+1), (i+1, j)
+    ).filter(p => 0 <= p._1 && p._1 < height && 0 <= p._2 && p._2 < width)*/
     val empty: List[(Int, Int)] = possible.filter(p => null == ocean(p._1)(p._2))
     val fishes: List[(Int, Int)] = possible.filter(p => null != ocean(p._1)(p._2) && ocean(p._1)(p._2).isFish)
     ocean(i)(j).action((i, j), ocean, empty, fishes)

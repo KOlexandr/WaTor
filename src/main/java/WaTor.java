@@ -212,7 +212,9 @@ class WaTorCanvas extends Canvas {
     }
 
     private Collection<String> toCSVLine(final Collection<Tuple2<Integer, Integer>> lines){
-        return lines.stream().map(t -> t._1().toString() + "," + t._2().toString()).collect(Collectors.toList());
+        final String line0 = "" + lines.stream().map(t -> t._1().toString()).collect(Collectors.joining(","));
+        final String line1 = lines.stream().map(t -> t._2().toString()).collect(Collectors.joining(","));
+        return Arrays.asList(line0, line1);
     }
 
     private List<Tuple2<Integer, Integer>> createPhasePortrait(){
@@ -232,41 +234,14 @@ class WaTorCanvas extends Canvas {
     }
 }
 
-class ScrollField extends Panel {
-    private Scrollbar s;
-    private TextField t;
-
-    ScrollField(String description, int initVal) {
-        setLayout(new BorderLayout());
-
-        add("West", new Label(description));
-        t = new TextField(Integer.toString(initVal), 5);
-        t.addActionListener(e -> s.setValue(Integer.parseInt(t.getText())));
-        add("East", t);
-
-        s = new Scrollbar(Scrollbar.HORIZONTAL, initVal, 1, 1, 50);
-        s.addAdjustmentListener(e -> t.setText(Integer.toString(s.getValue())));
-        add("South", s);
-    }
-
-    public int getValue() {
-        return s.getValue();
-    }
-
-    public void setValue(int val){
-        s.setValue(val);
-        t.setText(String.valueOf(val));
-    }
-}
-
 public class WaTor extends Applet {
     private WaTorCanvas wc;
     private TextField timeoutField;
     private TextField initFishField;
     private TextField initSharkField;
-    private ScrollField fishBreedScrollField;
-    private ScrollField sharkBreedScrollField;
-    private ScrollField sharkStarveScrollField;
+    private TextField fishBreedScrollField;
+    private TextField sharkBreedScrollField;
+    private TextField sharkStarveScrollField;
 
     /**
      * initialize applet
@@ -295,10 +270,10 @@ public class WaTor extends Applet {
             wc.setRunning(false);
             wc.reload();
             initFishField.setText(String.valueOf(wc.getFishCount()));
-            fishBreedScrollField.setValue(wc.getFishReprTime());
+            fishBreedScrollField.setText(String.valueOf(wc.getFishReprTime()));
             initSharkField.setText(String.valueOf(wc.getSharkCount()));
-            sharkBreedScrollField.setValue(wc.getSharkReprTime());
-            sharkStarveScrollField.setValue(wc.getSharkEnergy());
+            sharkBreedScrollField.setText(String.valueOf(wc.getSharkReprTime()));
+            sharkStarveScrollField.setText(String.valueOf(wc.getSharkEnergy()));
             timeoutField.setText(String.valueOf(wc.getTimeout()));
         });
         p.add(reset);
@@ -309,10 +284,10 @@ public class WaTor extends Applet {
                     WaTorCanvas.DEFAULT_WIDTH,
                     WaTorCanvas.DEFAULT_HEIGHT,
                     new Integer(initFishField.getText()),
-                    fishBreedScrollField.getValue(),
+                    new Integer(fishBreedScrollField.getText()),
                     new Integer(initSharkField.getText()),
-                    sharkBreedScrollField.getValue(),
-                    sharkStarveScrollField.getValue()
+                    new Integer(sharkBreedScrollField.getText()),
+                    new Integer(sharkStarveScrollField.getText())
             );
             timeoutField.setText(wc.setTimeout(timeoutField.getText()));
         });
@@ -348,14 +323,23 @@ public class WaTor extends Applet {
         });
         p.add(timeout);
 
-        fishBreedScrollField = new ScrollField("Fish Breed Age", wc.getFishReprTime());
-        p.add(fishBreedScrollField);
+        final Panel fba = new Panel();
+        fba.add(new Label("Fish Breed Age"));
+        fishBreedScrollField = new TextField(Integer.toString(wc.getFishReprTime()), 5);
+        fba.add(fishBreedScrollField);
+        p.add(fba);
 
-        sharkBreedScrollField = new ScrollField("Shark Breed Age", wc.getSharkReprTime());
-        p.add(sharkBreedScrollField);
+        final Panel sba = new Panel();
+        sba.add(new Label("Shark Breed Age"));
+        sharkBreedScrollField = new TextField(Integer.toString(wc.getSharkReprTime()), 5);
+        sba.add(sharkBreedScrollField);
+        p.add(sba);
 
-        sharkStarveScrollField = new ScrollField("Shark Starve Time", wc.getSharkEnergy());
-        p.add(sharkStarveScrollField);
+        final Panel sst = new Panel();
+        sst.add(new Label("Shark Starve Time"));
+        sharkStarveScrollField = new TextField(Integer.toString(wc.getSharkEnergy()), 5);
+        sst.add(sharkStarveScrollField);
+        p.add(sst);
         add(p);
     }
 }
